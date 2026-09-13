@@ -1,0 +1,28 @@
+# LiteLLM proxy config: two local Ollama models exposed under one OpenAI-compatible
+# endpoint. LiteLLM routes by the request `model` field, so ONE Unity AI Gateway
+# provider service (base_url .../v1/chat/completions) can front both models.
+#
+# The input/output_cost_per_token values are SYNTHETIC (real Ollama models price at
+# $0 everywhere) so LiteLLM emits a non-zero response cost we can watch flow — and
+# watch get stripped by the Databricks gateway.
+model_list:
+  - model_name: qwen3.5
+    litellm_params:
+      model: ollama_chat/qwen3.5:latest
+      api_base: http://localhost:11434
+      input_cost_per_token: 0.000001    # $1.00 / 1M input tokens
+      output_cost_per_token: 0.000002   # $2.00 / 1M output tokens
+  - model_name: llama3.2
+    litellm_params:
+      model: ollama_chat/llama3.2:latest
+      api_base: http://localhost:11434
+      input_cost_per_token: 0.0000005   # $0.50 / 1M input tokens
+      output_cost_per_token: 0.0000015  # $1.50 / 1M output tokens
+
+general_settings:
+  master_key: os.environ/LITELLM_MASTER_KEY
+
+litellm_settings:
+  drop_params: true
+  # Per-request logger that prints tokens, cost, and where each number comes from.
+  callbacks: logging_callback.proxy_handler_instance
