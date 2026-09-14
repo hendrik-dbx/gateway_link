@@ -38,8 +38,7 @@ which governance metadata Databricks records (and which it doesn't).
   is priced from Databricks' own catalog keyed by `(provider, model)`; a custom
   model isn't in it, so no row. LiteLLM computes cost but returns it only in
   `x-litellm-response-cost*` **headers**, which the gateway strips. To govern cost
-  for this pattern, keep it LiteLLM-side or emit it via app OTel spans
-  (`mlflow.llm.cost`, as the sibling apps' `tracing.py` does).
+  for this pattern, keep it LiteLLM-side or emit it via app OTel spans).
 
 ## Key contract details (bit us during testing)
 
